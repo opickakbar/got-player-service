@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static com.gameofthree.playerservice.util.PlayerUtil.*;
+
 @RestController
 @RequestMapping("/game")
 @Slf4j
@@ -23,15 +25,17 @@ public class PlayerController {
 
     @PostMapping("/start")
     public String startGame() {
-        int initialNumber = (int) (Math.random() * 100) + 10;
-        String player1Id = playerRegistrationService.getPlayer1();
+        int initialNumberResult = (int) (Math.random() * 100) + 10;
+        int initialNumberAdded = 0;
+
+        String player1Id = playerRegistrationService.getPlayer(PLAYER_1_ID);
         if (player1Id == null) {
             return "Error: Player1 has not registered yet!";
         }
 
         // ✅ Send the message to the correct queue using "player.1" routing key
-        rabbitTemplate.convertAndSend("game.exchange", "player.1", new GameMoveEventDto(initialNumber, "Player1"));
-        return "Game Started with number: " + initialNumber;
+        rabbitTemplate.convertAndSend("game.exchange", "player.1", new GameMoveEventDto(initialNumberAdded, initialNumberResult, GAME_MASTER_ID, PLAYER_1_ID));
+        return "Game Started with number: " + initialNumberResult;
     }
 }
 

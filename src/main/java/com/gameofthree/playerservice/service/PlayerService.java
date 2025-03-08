@@ -6,52 +6,51 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
+import static com.gameofthree.playerservice.util.PlayerUtil.*;
+
 @Service
 @Slf4j
 public class PlayerService {
     private final RabbitTemplate rabbitTemplate;
     @Getter
-    private static String playerRole;
+    private static String playerId;
     private final PlayerRegistrationService playerRegistrationService;
 
     public PlayerService(RabbitTemplate rabbitTemplate, PlayerRegistrationService playerRegistrationService) {
         this.rabbitTemplate = rabbitTemplate;
         this.playerRegistrationService = playerRegistrationService;
-        playerRole = playerRegistrationService.registerPlayer();
-        log.info("✅ Player registered as {}", playerRole);
+        playerId = playerRegistrationService.registerPlayer();
+        log.info("✅ Player registered as {}", playerId);
     }
 
     public void processMove(GameMoveEventDto eventDto) {
-        log.info("Move received from player: {} with number: {}", eventDto.getPlayerId(), eventDto.getNumber());
-
-        // 🔹 Validate if this instance should process the move
-        if (!eventDto.getPlayerId().equals(playerRole)) {
+        if (!eventDto.getToPlayerId().equals(playerId) && !eventDto.getToPlayerId().equals(GAME_MASTER_ID)) {
             log.info("Ignoring move. Not my turn.");
             return;
         }
 
-        int number = eventDto.getNumber();
-        log.info("{} received: {}", playerRole, number);
+        int numberResult = eventDto.getNumberResult();
+        log.info("{} received: {}", playerId, numberResult);
 
-        if (number == 1) {
-            log.info("🎉 Game Over! {} wins!", playerRole);
+        if (numberResult == 1) {
+            log.info("🎉 Game Over! {} wins!", playerId);
             return;
         }
 
-        int adjustment = (number % 3 == 0) ? 0 : ((number % 3 == 1) ? -1 : 1);
-        int nextNumber = (number + adjustment) / 3;
+        int nextNumberAdded = (numberResult % 3 == 0) ? 0 : ((numberResult % 3 == 1) ? -1 : 1);
+        int nextNumberResult = (numberResult + nextNumberAdded) / 3;
 
-        // 🔹 Get the opponent's ID
-        String nextPlayerId = playerRegistrationService.getOpponent(playerRole);
+        // Get the opponent's ID
+        String nextPlayerId = playerRegistrationService.getOpponent(playerId);
         if (nextPlayerId == null) {
             log.warn("No opponent found. Game cannot continue.");
             return;
         }
 
-        // ✅ Send message to correct queue
-        String routingKey = nextPlayerId.equals("Player1") ? "player.1" : "player.2";
-        rabbitTemplate.convertAndSend("game.exchange", routingKey, new GameMoveEventDto(nextNumber, nextPlayerId));
-        log.info("📤 Published message to queue {} for next player: {} (ID: {}) with number: {}", routingKey, nextPlayerId, nextPlayerId, nextNumber);
+        // Send message to correct queue
+        String routingKey = nextPlayerId.equals(PLAYER_1_ID) ? "player.1" : "player.2";
+        rabbitTemplate.convertAndSend("game.exchange", routingKey, new GameMoveEventDto(nextNumberAdded, nextNumberResult, playerId, nextPlayerId));
+        log.info("📤 Published message to queue {} for next player: {} (ID: {}) with number: {}", routingKey, nextPlayerId, nextPlayerId, nextNumberResult);
     }
 
 }

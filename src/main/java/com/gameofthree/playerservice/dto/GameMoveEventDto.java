@@ -10,6 +10,8 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GameMoveEventDto implements Serializable {
-    private int number;
-    private String playerId;
+    private int numberAdded;
+    private int numberResult;
+    private String fromPlayerId;
+    private String toPlayerId;
 }

@@ -2,10 +2,12 @@ package com.gameofthree.playerservice.listener;
 
 import com.gameofthree.playerservice.dto.GameMoveEventDto;
 import com.gameofthree.playerservice.service.PlayerService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class PlayerEventListener {
 
     private final PlayerService playerService;
@@ -16,7 +18,7 @@ public class PlayerEventListener {
 
     @RabbitListener(queues = "#{@playerQueue}")
     public void processMove(GameMoveEventDto eventDto) {
-        System.out.println("🐇 Player " + PlayerService.getPlayerRole() + " Received Move: " + eventDto.getNumber());
+        log.info("Player: {} Received Move: {} with Result: {} from Player: {}", PlayerService.getPlayerId(), eventDto.getNumberAdded(), eventDto.getNumberResult(), eventDto.getFromPlayerId());
         playerService.processMove(eventDto);
     }
 }

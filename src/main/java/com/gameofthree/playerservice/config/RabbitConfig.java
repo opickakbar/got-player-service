@@ -52,7 +52,7 @@ public class RabbitConfig {
 
     @Bean
     public String playerQueue() {
-        return PlayerService.getPlayerRole().equals("Player1") ? "player.queue.1" : "player.queue.2";
+        return PlayerService.getPlayerId().equals("Player1") ? "player.queue.1" : "player.queue.2";
     }
 }
 
