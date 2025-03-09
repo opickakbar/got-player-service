@@ -18,7 +18,7 @@ public class PlayerEventListener {
 
     @RabbitListener(queues = "#{@playerQueue}")
     public void processMove(GameMoveEventDto eventDto) {
-        log.info("Player: {} Received Move: {} with Result: {} from Player: {}", PlayerService.getPlayerId(), eventDto.getNumberAdded(), eventDto.getNumberResult(), eventDto.getFromPlayerId());
+        log.info("{} Received Move: {} with Result: {} from Player: {}", PlayerService.getPlayerId(), eventDto.getNumberAdded(), eventDto.getNumberResult(), eventDto.getFromPlayerId());
         playerService.processMove(eventDto);
     }
 }

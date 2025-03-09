@@ -8,6 +8,8 @@ import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import static com.gameofthree.playerservice.util.Utils.*;
+
 @Configuration
 public class RabbitConfig {
 
@@ -20,22 +22,22 @@ public class RabbitConfig {
 
     @Bean
     public Queue playerQueue1() {
-        return new Queue("player.queue.1", false);
+        return new Queue(PLAYER_1_QUEUE, false);
     }
 
     @Bean
     public Queue playerQueue2() {
-        return new Queue("player.queue.2", false);
+        return new Queue(PLAYER_2_QUEUE, false);
     }
 
     @Bean
     public Binding bindingPlayer1(Queue playerQueue1, DirectExchange gameExchange) {
-        return BindingBuilder.bind(playerQueue1).to(gameExchange).with("player.1");
+        return BindingBuilder.bind(playerQueue1).to(gameExchange).with(PLAYER_1_ROUTING_KEY);
     }
 
     @Bean
     public Binding bindingPlayer2(Queue playerQueue2, DirectExchange gameExchange) {
-        return BindingBuilder.bind(playerQueue2).to(gameExchange).with("player.2");
+        return BindingBuilder.bind(playerQueue2).to(gameExchange).with(PLAYER_2_ROUTING_KEY);
     }
 
     @Bean
@@ -52,7 +54,7 @@ public class RabbitConfig {
 
     @Bean
     public String playerQueue() {
-        return PlayerService.getPlayerId().equals("Player1") ? "player.queue.1" : "player.queue.2";
+        return PlayerService.getPlayerId().equals(PLAYER_1_ID) ? PLAYER_1_QUEUE : PLAYER_2_QUEUE;
     }
 }
 

@@ -4,15 +4,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
-import static com.gameofthree.playerservice.util.PlayerUtil.*;
+import static com.gameofthree.playerservice.util.Utils.*;
 
 @Service
 @Slf4j
-public class PlayerRegistrationService {
+public class GameRedisManager {
 
     private final StringRedisTemplate redisTemplate;
 
-    public PlayerRegistrationService(StringRedisTemplate redisTemplate) {
+    public GameRedisManager(StringRedisTemplate redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 
@@ -31,13 +31,10 @@ public class PlayerRegistrationService {
         return "Spectator";
     }
 
-    public String getPlayer(String key) {
-        return redisTemplate.opsForValue().get(key);
+    public void setWinner(String playerId) {
+        redisTemplate.opsForValue().set(WINNER_ID, playerId);
     }
 
-    public String getOpponent(String playerRole) {
-        return playerRole.equals(PLAYER_1_ID) ? PLAYER_2_ID : PLAYER_1_ID;
-    }
 }
 
 
