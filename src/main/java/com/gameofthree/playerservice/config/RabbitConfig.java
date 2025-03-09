@@ -13,8 +13,6 @@ import static com.gameofthree.playerservice.util.Utils.*;
 @Configuration
 public class RabbitConfig {
 
-    private static final String GAME_EXCHANGE = "game.exchange";
-
     @Bean
     public DirectExchange gameExchange() {
         return new DirectExchange(GAME_EXCHANGE);
