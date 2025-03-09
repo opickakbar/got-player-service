@@ -16,7 +16,7 @@ public class PlayerService {
 
     private final GameRedisManager gameRedisManager;
     private final GameEventService gameEventService;
-    static String playerId;
+    static volatile String playerId;
 
     public PlayerService(GameEventService gameEventService, GameRedisManager gameRedisManager) {
         this.gameEventService = gameEventService;
@@ -28,7 +28,7 @@ public class PlayerService {
     }
 
     public void processMove(GameMoveEventDto eventDto) {
-        if (!eventDto.getToPlayerId().equals(playerId) && !eventDto.getFromPlayerId().equals(GAME_MASTER_ID)) {
+        if (!eventDto.getToPlayerId().equals(playerId) && !GAME_MASTER_ID.equals(eventDto.getFromPlayerId())) {
             log.info("Ignoring move. Not my turn.");
             return;
         }
