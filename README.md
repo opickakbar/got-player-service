@@ -65,4 +65,7 @@ Expected output:
 ```
 
 ---
+
+Please check [here](./GAME_DETAILS.md) to see game details,
+
 Made with ❤️ by Muhammad Taufik Akbar

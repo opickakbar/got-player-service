@@ -106,5 +106,6 @@ You can also check the logs in the player instances to see how the game run and 
 | Game does not start                     | Ensure both players have registered |
 
 ---
+
 Made with ❤️ by Muhammad Taufik Akbar
 
