@@ -16,13 +16,15 @@ public class PlayerService {
 
     private final GameRedisManager gameRedisManager;
     private final GameEventService gameEventService;
-    private static String playerId;
+    static String playerId;
 
     public PlayerService(GameEventService gameEventService, GameRedisManager gameRedisManager) {
         this.gameEventService = gameEventService;
         this.gameRedisManager = gameRedisManager;
-        playerId = gameRedisManager.registerPlayer();
-        log.info("Player registered as {}", playerId);
+        if (playerId == null) {
+            playerId = gameRedisManager.registerPlayer();
+            log.info("Player registered as {}", playerId);
+        }
     }
 
     public void processMove(GameMoveEventDto eventDto) {
@@ -50,7 +52,7 @@ public class PlayerService {
         return new GameMoveEventDto(newNumberAdded, newNumberResult, playerId, opponentId);
     }
 
-    private int calculateNumberAdded(int numberResult) {
+    int calculateNumberAdded(int numberResult) {
         if (numberResult % 3 == 0) return 0;
         if ((numberResult + 1) % 3 == 0) return 1;
         return -1;
